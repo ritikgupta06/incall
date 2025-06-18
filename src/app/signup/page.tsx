@@ -1,26 +1,55 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function Signup() {
+  const router = useRouter();
   const [user, setUser] = React.useState({
     email: "",
     password: "",
     username: "",
   });
+  const [buttonDisabled, setButtonDisabled] = React.useState(false);
+  const [loding, setLoading] = React.useState(false);
 
   const onSignup = async () => {
     // handle signup logic here
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/users/signup", user);
+      console.log("Response from signup:", response.data);
+      router.push("/login");
+      toast.success("Signup successful! Please login.");
+    } catch (error: any) {
+      console.error("Error during signup:", error);
+      toast.error(error.memssage || "Something went wrong!");
+      console.error("Signup error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (
+      user.email.length > 0 &&
+      user.password.length > 0 &&
+      user.username.length > 0
+    ) {
+      setButtonDisabled(false);
+    } else {
+      setButtonDisabled(true);
+    }
+  }, [user]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">
-          Signup
+          {loding ? "Signing Up..." : "Create an Account"}
         </h1>
 
         <div className="space-y-4">
@@ -77,9 +106,14 @@ export default function Signup() {
 
           <button
             onClick={onSignup}
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
+            disabled={buttonDisabled || loding}
+            className={`w-full py-2 px-4 rounded-md transition duration-300 ${
+              buttonDisabled || loding
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
           >
-            Sign Up
+            {loding ? "Signing Up..." : "Sign Up"}
           </button>
 
           <p className="text-sm text-center mt-4 text-gray-600">
