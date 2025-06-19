@@ -26,7 +26,9 @@ export default function Signup() {
       toast.success("Signup successful! Please login.");
     } catch (error: any) {
       console.error("Error during signup:", error);
-      toast.error(error.memssage || "Something went wrong!");
+      toast.error(
+        error.response?.data?.error || error.message || "Something went wrong!"
+      );
       console.error("Signup error:", error);
     } finally {
       setLoading(false);

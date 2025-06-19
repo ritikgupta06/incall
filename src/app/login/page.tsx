@@ -26,7 +26,9 @@ export default function Login() {
       router.push("/profile"); // Redirect to home page after successful login
     } catch (error: any) {
       console.error("Login error:", error);
-      toast.error(error.message || "Login failed. Please try again.");
+      toast.error(
+        error.response?.data?.error || error.message || "Login failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
